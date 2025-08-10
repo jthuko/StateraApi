@@ -1,0 +1,6 @@
+@Statera.Api_HostAddress = http://localhost:5217
+
+GET {{Statera.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
