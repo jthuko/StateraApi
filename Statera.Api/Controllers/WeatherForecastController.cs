@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Statera.Api.Controllers;
 
+//This is a test
+
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
