@@ -7,6 +7,8 @@ namespace Statera.Api.Data
     {
         public DbSet<Staff> Staff => Set<Staff>();
         public DbSet<Role> Roles => Set<Role>();
+        public DbSet<Assignment> Assignments => Set<Assignment>();
+        public DbSet<StaffLicense> StaffLicenses => Set<StaffLicense>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,6 +54,35 @@ namespace Statera.Api.Data
                 new Role { Id = 4, Position = "CNA", IsClinical = true },
                 new Role { Id = 5, Position = "Scheduler", IsClinical = false }
             );
+            
+            modelBuilder.Entity<Assignment>(e =>
+            {
+                e.Property(a => a.FacilityState).HasMaxLength(2).IsRequired();
+                e.Property(a => a.Unit).HasMaxLength(100);
+                e.Property(a => a.Notes).HasMaxLength(256);
+
+                // Fast queries: by staff and date
+                e.HasIndex(a => new { a.StaffId, a.StartUtc });
+                // Safety: End > Start
+                e.ToTable(tb =>
+                {
+                    tb.HasCheckConstraint("CK_Assignment_Time", "[EndUtc] > [StartUtc]");
+                });
+            });
+
+            modelBuilder.Entity<StaffLicense>(e =>
+            {
+                e.Property(x => x.IssuingState).HasMaxLength(2).IsRequired();
+                e.Property(x => x.LicenseNumber).HasMaxLength(32);
+                e.Property(x => x.VerificationUrl).HasMaxLength(256);
+
+                // store as SQL 'date'
+                e.Property(x => x.ExpirationDate).HasColumnType("date");
+                e.Property(x => x.LastVerifiedOn).HasColumnType("date");
+
+                // indexes used by the policy service
+                e.HasIndex(x => new { x.StaffId, x.IssuingState, x.LicenseType, x.IsActive });
+            });
         }
     }
 }

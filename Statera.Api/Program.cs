@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Statera.Api.Data;
+using Statera.Api.Services;
 // optional: for safer connection logging
 // using Microsoft.Data.SqlClient;
 
@@ -21,6 +22,8 @@ builder.Services.AddSwaggerGen();
 
 // Nice EF error pages (dev only)
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+// Program.cs
+builder.Services.AddScoped<LicensePolicyService>(); // from earlier message
 
 var app = builder.Build();
 
@@ -48,6 +51,7 @@ if (app.Environment.IsDevelopment())
         throw;
     }
 }
+
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
